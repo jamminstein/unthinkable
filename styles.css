@@ -1,0 +1,62 @@
+:root {
+  color-scheme: light;
+  background: #fff;
+  color: #000;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: #fff;
+  color: #000;
+}
+
+body {
+  padding: 0 20px 64px;
+}
+
+#feed {
+  width: min(100%, 720px);
+  margin: 0 auto;
+}
+
+.post {
+  padding: 42px 0 38px;
+  border-bottom: 1px solid #000;
+}
+
+.post pre {
+  max-width: 100%;
+  margin: 0;
+  overflow-x: auto;
+  color: #000;
+  font: inherit;
+  font-size: clamp(14px, 2.1vw, 17px);
+  line-height: 1.55;
+  white-space: pre;
+}
+
+.post time {
+  display: block;
+  margin-top: 24px;
+  color: #000;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 520px) {
+  body {
+    padding-inline: 14px;
+  }
+
+  .post {
+    padding-block: 30px 27px;
+  }
+}
