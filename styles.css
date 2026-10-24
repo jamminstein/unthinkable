@@ -19,7 +19,7 @@
 
 body {
   margin: 0;
-  padding: 0 clamp(20px, 5vw, 64px) 90px;
+  padding: 107px clamp(20px, 5vw, 64px) 90px;
 }
 
 ::selection { background: #e1e7f4; color: #111; }
@@ -30,8 +30,18 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px clamp(18px, 4vw, 36px);
-  margin: 20px auto 44px;
-  max-width: 720px;
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 2147483647;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  transform: translateX(-50%);
+  color: #141414;
+  font-family: 'Unthinkable Pen', ui-monospace, monospace;
+  font-feature-settings: 'calt' 1, 'palt' 1;
+  font-synthesis: none;
+  font-weight: 400;
   font-size: 17px;
   line-height: 1.6;
 }
@@ -51,6 +61,13 @@ body {
 .tiago-portal-nav a[aria-current],
 .tiago-portal-nav a:hover { text-decoration: underline; }
 .tiago-portal-nav a:focus-visible { outline: 1px dashed currentColor; outline-offset: 5px; }
+
+@media (max-width: 520px) {
+  .tiago-portal-nav { font-size: 14px; gap: 8px 12px; }
+}
+@media (max-width: 360px) {
+  .tiago-portal-nav { font-size: 13px; gap: 8px 10px; }
+}
 
 #feed { width: min(100%, 850px); margin: 0 auto; }
 
@@ -119,7 +136,7 @@ body {
 }
 
 @media (max-width: 520px) {
-  .tiago-portal-nav { margin-block: 14px 32px; font-size: 14px; gap: 8px 12px; }
+  body { padding-top: 84px; }
   .post { padding-left: calc(var(--indent, 0%) * .35); padding-right: 5px; padding-bottom: calc(var(--breath, 70px) * .8); }
   .equation { font-size: clamp(22px, calc(var(--size, 27px) * .85), 27px); }
   .post time { margin-left: 4px; }
