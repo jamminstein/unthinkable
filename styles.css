@@ -1,131 +1,126 @@
-:root {
-  color-scheme: light;
-  background: #fff;
-  color: #000;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-}
-
 @font-face {
-  font-family: "xxQueen Basic";
-  src: url("https://jamminstein.github.io/tiago-lol/assets/fonts/xxqueen-basic.ttf") format("truetype");
-  font-style: normal;
+  font-family: 'Unthinkable Pen';
+  src: url('./assets/fonts/unthinkable-pen.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
   font-display: swap;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  min-height: 100%;
-  margin: 0;
+:root {
+  color-scheme: light;
   background: #fff;
-  color: #000;
+  color: #141414;
+  font-family: 'Unthinkable Pen', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-feature-settings: 'calt' 1, 'palt' 1;
+  font-synthesis: none;
 }
 
+* { box-sizing: border-box; }
+
 body {
-  padding: 0 20px 64px;
+  margin: 0;
+  padding: 0 clamp(20px, 5vw, 64px) 90px;
 }
+
+::selection { background: #e1e7f4; color: #111; }
 
 .tiago-portal-nav {
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  right: auto;
-  z-index: 2147483647;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 1.35rem;
-  width: max-content;
-  max-width: calc(100vw - 24px);
-  padding: 8px 15px 7px;
-  box-sizing: border-box;
-  transform: translateX(-50%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.72);
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
-  backdrop-filter: blur(14px) saturate(150%);
-  color: #fff;
-  font-family: "xxQueen Basic", serif;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  text-transform: lowercase;
+  gap: 12px clamp(18px, 4vw, 36px);
+  margin: 20px auto 44px;
+  max-width: 720px;
+  font-size: 21px;
+  line-height: 1.6;
 }
 
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .tiago-portal-nav {
-    background: rgba(0, 0, 0, 0.92);
-  }
-}
-
-.tiago-portal-nav a,
-.tiago-portal-nav a:visited {
-  color: #fff;
+.tiago-portal-nav a {
+  color: inherit;
   text-decoration: none;
-  opacity: 1;
-  transition: opacity 140ms ease;
+  padding: 8px 2px;
+  text-underline-offset: 8px;
+  text-decoration-thickness: 1px;
+  transform: rotate(-3deg);
 }
 
-.tiago-portal-nav a:hover,
-.tiago-portal-nav a:focus-visible {
-  opacity: 0.62;
-}
+.tiago-portal-nav a:nth-child(2) { transform: rotate(1.5deg) translateY(3px); }
+.tiago-portal-nav a:nth-child(3) { transform: rotate(-1deg) translateY(-2px); }
+.tiago-portal-nav a:nth-child(4) { transform: rotate(2deg); }
+.tiago-portal-nav a[aria-current],
+.tiago-portal-nav a:hover { text-decoration: underline; }
+.tiago-portal-nav a:focus-visible { outline: 1px dashed currentColor; outline-offset: 5px; }
 
-.tiago-portal-nav a:focus-visible {
-  outline: 1px solid currentColor;
-  outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tiago-portal-nav a {
-    transition: none;
-  }
-}
-
-#feed {
-  width: min(100%, 720px);
-  margin: 0 auto;
-}
+#feed { width: min(100%, 850px); margin: 0 auto; }
 
 .post {
-  padding: 42px 0 38px;
-  border-bottom: 1px solid #000;
+  padding: 20px 12px var(--breath, 70px) var(--indent, 0%);
+  color: rgb(20 20 20 / var(--ink, 1));
 }
 
-.post pre {
+.equation {
   max-width: 100%;
   margin: 0;
-  overflow-x: auto;
-  color: #000;
   font: inherit;
-  font-size: clamp(14px, 2.1vw, 17px);
-  line-height: 1.55;
+  font-size: var(--size, 27px);
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
+.word-line {
+  display: inline-block;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-spacing: var(--word-gap, 0px);
+  letter-spacing: var(--tracking, 0px);
+  transform-origin: left center;
+}
+
+.subject { transform: rotate(var(--turn, 0deg)); }
+.answer {
+  padding-left: var(--answer-indent, 0px);
+  font-size: calc(1em * var(--answer-size, 1));
+  transform: rotate(var(--answer-turn, 0deg));
+}
+
+.circuit {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 100%;
+  margin-block: var(--before-diagram, 20px) var(--after-diagram, 24px);
+  padding: 5px 2px;
   white-space: pre;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  font-size: .9em;
+  /* One font cell and one em per row keep every branch attached. */
+  line-height: 1;
+  letter-spacing: 0;
+  word-spacing: 0;
+  font-feature-settings: 'calt' 1, 'palt' 0;
+  transform-origin: left center;
+  transform: rotate(var(--diagram-turn, 0deg));
 }
 
 .post time {
   display: block;
-  margin-top: 24px;
-  color: #000;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  width: fit-content;
+  max-width: 100%;
+  margin: 28px 0 0 var(--date-indent, 0px);
+  font-size: 16px;
+  line-height: 1.5;
+  word-spacing: 3px;
+  opacity: .72;
+  transform: rotate(var(--date-turn, 0deg));
+  transform-origin: left center;
 }
 
 @media (max-width: 520px) {
-  body {
-    padding-inline: 14px;
-  }
-
-  .post {
-    padding-block: 30px 27px;
-  }
+  .tiago-portal-nav { margin-block: 14px 32px; font-size: 17px; gap: 8px 12px; }
+  .post { padding-left: calc(var(--indent, 0%) * .35); padding-right: 5px; padding-bottom: calc(var(--breath, 70px) * .8); }
+  .equation { font-size: clamp(22px, calc(var(--size, 27px) * .85), 27px); }
+  .post time { margin-left: 4px; }
 }
