@@ -32,7 +32,7 @@ body {
   gap: 12px clamp(18px, 4vw, 36px);
   margin: 20px auto 44px;
   max-width: 720px;
-  font-size: 21px;
+  font-size: 17px;
   line-height: 1.6;
 }
 
@@ -119,8 +119,12 @@ body {
 }
 
 @media (max-width: 520px) {
-  .tiago-portal-nav { margin-block: 14px 32px; font-size: 17px; gap: 8px 12px; }
+  .tiago-portal-nav { margin-block: 14px 32px; font-size: 14px; gap: 8px 12px; }
   .post { padding-left: calc(var(--indent, 0%) * .35); padding-right: 5px; padding-bottom: calc(var(--breath, 70px) * .8); }
   .equation { font-size: clamp(22px, calc(var(--size, 27px) * .85), 27px); }
   .post time { margin-left: 4px; }
+}
+
+@media (max-width: 360px) {
+  .tiago-portal-nav { font-size: 13px; gap: 8px 10px; }
 }
