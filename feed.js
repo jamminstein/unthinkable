@@ -64,21 +64,40 @@ function renderPost(post) {
   return article;
 }
 
-fetch('./posts.json', { cache: 'no-store' })
-  .then((response) => {
-    if (!response.ok) throw new Error(`feed unavailable (${response.status})`);
-    return response.json();
-  })
+async function fetchFeed() {
+  // A brief network or deployment failure should not leave the page stuck.
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response = await fetch('./posts.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`feed unavailable (${response.status})`);
+      const data = await response.json();
+      if (!Array.isArray(data.posts)) throw new Error('invalid feed data');
+      return data;
+    } catch (error) {
+      if (attempt === 2) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
+}
+
+fetchFeed()
   .then(({ posts }) => {
     const fragment = document.createDocumentFragment();
     posts.forEach((post) => fragment.append(renderPost(post)));
     feed.replaceChildren(fragment);
   })
-  .catch(() => {
+  .catch((error) => {
+    console.error('Could not load the Unthinkable feed:', error);
     const post = document.createElement('article');
     post.className = 'post';
     const text = document.createElement('pre');
-    text.textContent = 'THE FEED WILL RETURN.';
-    post.append(text);
+    text.className = 'equation';
+    text.textContent = "the feed couldn't load";
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'feed-retry';
+    retry.textContent = 'try again';
+    retry.addEventListener('click', () => window.location.reload());
+    post.append(text, retry);
     feed.replaceChildren(post);
   });

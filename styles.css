@@ -122,6 +122,20 @@ body {
   transform: rotate(var(--diagram-turn, 0deg));
 }
 
+.feed-retry {
+  display: block;
+  margin-top: 20px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 21px;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  cursor: pointer;
+}
+
 .post time {
   display: block;
   width: fit-content;
