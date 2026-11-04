@@ -1,11 +1,6 @@
 {
   "posts": [
     {
-      "id": "post-4764dab40012b3d1",
-      "text": "TURTLE HANDS\n──┤╫├───┤▷├───┤⊡├────{○}───╫───\nPARLIAMENT-FUNKADELIC",
-      "posted_at": "2026-11-04 22:39:25"
-    },
-    {
       "id": "post-6ce2298379f42636",
       "text": "THERANOS\n────┤►├─────[U1]─────┤▷├────┤○├───\nTHE FIRST SUN LANDING",
       "posted_at": "2026-11-04 22:37:57"
@@ -1254,6 +1249,11 @@
       "id": "post-af8f900fc499c2f9",
       "text": "BESTREUE\n──[●]──┤●├──┐\n            │\n            ⊥\n        ───╪─────┤⊡├───\nANTIMICROBIAL POLYMER",
       "posted_at": "2026-10-26 10:00:06"
+    },
+    {
+      "id": "post-4764dab40012b3d1",
+      "text": "TURTLE HANDS\n──┤╫├───┤▷├───┤⊡├────{○}───╫───\nPARLIAMENT-FUNKADELIC",
+      "posted_at": "2026-10-26 00:00:07"
     },
     {
       "id": "post-3b1fb07448435276",
