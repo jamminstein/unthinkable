@@ -15,3 +15,9 @@ python3 -m venv .font-env
 ```
 
 Serve this directory with any static server to preview the page.
+
+The share image, `assets/unthinkable-og-equations.png`, is the lettering of `assets/unthinkable-og.png` with every post in `posts.json` packed around it in the pen font, each equation once and none overlapping. To rebuild it after the feed has grown (needs Pillow, and Playwright for node with its Chromium):
+
+```sh
+NODE_PATH=<a node_modules with playwright> python3 scripts/og/build.py
+```

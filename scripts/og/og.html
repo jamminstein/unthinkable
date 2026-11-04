@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: 'Unthinkable Pen'; src: url('../../assets/fonts/unthinkable-pen.woff2') format('woff2'); }
+html, body { margin: 0; background: #fff; }
+#stage {
+  position: relative; overflow: hidden; background: #fff; color: #141414;
+  font-family: 'Unthinkable Pen', monospace;
+  font-feature-settings: 'calt' 1, 'palt' 1; font-synthesis: none;
+}
+.eq { position: absolute; left: 0; top: 0; margin: 0; font: inherit; line-height: 1.3;
+      white-space: pre; transform-origin: center center; }
+.eq .w { display: inline-block; white-space: pre; transform-origin: left center; }
+.eq .c { display: inline-block; vertical-align: top; white-space: pre; line-height: 1;
+         font-size: .9em; letter-spacing: 0; font-feature-settings: 'calt' 1, 'palt' 0; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+function randomFor(seed) {
+  let state = 2166136261;
+  for (const char of seed) state = Math.imul(state ^ char.charCodeAt(0), 16777619);
+  return () => {
+    state += 0x6D2B79F5;
+    let value = Math.imul(state ^ (state >>> 15), 1 | state);
+    value ^= value + Math.imul(value ^ (value >>> 7), 61 | value);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Build one element per post, in the feed's own structure: subject, circuit, answer.
+function makeEq(post) {
+  const r = randomFor(post.id + ':og');
+  const between = (a, b) => a + r() * (b - a);
+  const el = document.createElement('pre');
+  el.className = 'eq';
+  const lines = post.text.split('\n');
+  const sub = document.createElement('span'); sub.className = 'w';
+  sub.textContent = lines[0];
+  sub.style.transform = `rotate(${between(-1.8, 1.8).toFixed(2)}deg)`;
+  const cir = document.createElement('span'); cir.className = 'c';
+  cir.textContent = lines.slice(1, -1).join('\n');
+  cir.style.margin = `${between(0.25, 0.55).toFixed(2)}em 0 ${between(0.3, 0.6).toFixed(2)}em`;
+  const ans = document.createElement('span'); ans.className = 'w';
+  ans.textContent = lines[lines.length - 1];
+  ans.style.paddingLeft = `${between(0, 1.2).toFixed(2)}em`;
+  ans.style.fontSize = `${between(0.9, 1.12).toFixed(2)}em`;
+  ans.style.transform = `rotate(${between(-2.3, 2.3).toFixed(2)}deg)`;
+  el.append(sub, '\n', cir, '\n', ans);
+  return { el, turn: between(-1.4, 1.4), ink: r(), jitter: r() };
+}
+
+function pack(blocks, G, scale, opts) {
+  const W = G.w + 2, H = G.h + 2, cell = G.cell;
+  const occ = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const inside = x > 0 && y > 0 && x < W - 1 && y < H - 1;
+    occ[y * W + x] = inside ? G.bits[(y - 1) * G.w + (x - 1)] : 1;
+  }
+  const IW = W + 1;
+  const I = new Int32Array(IW * (H + 1));
+  const build = (y0) => {
+    for (let y = Math.max(0, y0); y < H; y++) {
+      let row = 0;
+      for (let x = 0; x < W; x++) {
+        row += occ[y * W + x];
+        I[(y + 1) * IW + (x + 1)] = I[y * IW + (x + 1)] + row;
+      }
+    }
+  };
+  build(0);
+  const sum = (x0, y0, x1, y1) => I[y1 * IW + x1] - I[y0 * IW + x1] - I[y1 * IW + x0] + I[y0 * IW + x0];
+  const out = [];
+  for (const b of blocks) {
+    const s = scale * b.tier;
+    const rad = Math.abs(b.turn) * Math.PI / 180;
+    const w = b.w * s, h = b.h * s;
+    const rw = w * Math.cos(rad) + h * Math.sin(rad);
+    const rh = w * Math.sin(rad) + h * Math.cos(rad);
+    const bw = Math.ceil(rw / cell) + opts.pad, bh = Math.ceil(rh / cell) + opts.pad;
+    let best = -1, bx = 0, by = 0;
+    for (let y = 1; y + bh <= H - 1; y++) {
+      for (let x = 1; x + bw <= W - 1; x++) {
+        if (sum(x, y, x + bw, y + bh) !== 0) continue;
+        const ring = sum(x - 1, y - 1, x + bw + 1, y + bh + 1);
+        const h32 = Math.imul(x * 73856093 ^ y * 19349663, 2654435761) >>> 0;
+        const score = ring / (2 * (bw + bh) + 4) + (h32 / 4294967296) * opts.noise;
+        if (score > best) { best = score; bx = x; by = y; }
+      }
+    }
+    if (best < 0) return { ok: false, placed: out.length };
+    for (let y = by; y < by + bh; y++) occ.fill(1, y * W + bx, y * W + bx + bw);
+    build(by);
+    out.push({ b, s, x: (bx - 1) * cell, y: (by - 1) * cell, bw: bw * cell, bh: bh * cell, w, h });
+  }
+  return { ok: true, placed: out.length, out };
+}
+
+window.compose = async function (posts, G, opts) {
+  const K = opts.K;            // CSS px per output px, so no font goes below Chrome's floor
+  const stage = document.getElementById('stage');
+  stage.style.width = `${1200 * K}px`; stage.style.height = `${630 * K}px`;
+  await document.fonts.load(`20px 'Unthinkable Pen'`);
+  const BASE = 20;
+  const made = posts.map((p) => ({ p, ...makeEq(p) }));
+  // Measure everything at the base size.
+  for (const m of made) { m.el.style.fontSize = `${BASE * K}px`; stage.append(m.el); }
+  for (const m of made) { m.w = m.el.offsetWidth / K; m.h = m.el.offsetHeight / K; }
+  // Tiers: a few big ones you can read, a middle, and a fine field.
+  const order = made.slice().sort((a, b) => a.jitter - b.jitter);
+  order.forEach((m, i) => {
+    m.tier = i < opts.tiers[0] ? opts.big : i < opts.tiers[1] ? opts.mid : i < opts.tiers[2] ? opts.small : opts.fine;
+  });
+  const blocks = made.slice().sort((a, b) => b.w * b.h * b.tier * b.tier - a.w * a.h * a.tier * a.tier);
+  let lo = 0.02, hi = 1.5, best = null;
+  for (let i = 0; i < opts.iters; i++) {
+    const mid = (lo + hi) / 2;
+    const res = pack(blocks, G, mid, opts);
+    if (res.ok) { lo = mid; best = res; } else { hi = mid; }
+  }
+  if (!best) throw new Error('nothing fits');
+  for (const o of best.out) {
+    const m = o.b, fs = BASE * o.s * K * (opts.grow || 1);  // grow > 1 lets them collide
+    m.el.style.fontSize = `${fs}px`;
+    const f = BASE * o.s * (opts.grow || 1);  // font size in output px
+    const ink = opts.inkLo + (opts.inkHi - opts.inkLo) * m.ink;
+    m.el.style.color = `rgb(20 20 20 / ${ink.toFixed(2)})`;
+    // The pen line is ~0.053 em; small text gets a stroke so every line stays visible.
+    const extra = Math.max(0, opts.minLine - 0.053 * f) * K;
+    if (extra > 0) m.el.style.webkitTextStroke = `${extra.toFixed(2)}px rgb(20 20 20 / ${ink.toFixed(2)})`;
+    // Centre the unrotated box in its packed cell, then turn it.
+    const cx = (o.x + o.bw / 2) * K, cy = (o.y + o.bh / 2) * K;
+    const ew = m.el.offsetWidth, eh = m.el.offsetHeight;
+    m.el.style.left = `${(cx - ew / 2).toFixed(2)}px`;
+    m.el.style.top = `${(cy - eh / 2).toFixed(2)}px`;
+    m.el.style.transform = `rotate(${m.turn.toFixed(2)}deg)`;
+  }
+  const sizes = best.out.map((o) => BASE * o.s);
+  return { placed: best.placed, scale: lo, minFont: Math.min(...sizes), maxFont: Math.max(...sizes) };
+};
+</script>
+</body>
+</html>
