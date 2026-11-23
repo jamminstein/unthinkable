@@ -1,6 +1,11 @@
 {
   "posts": [
     {
+      "id": "post-1d635d8dcebcf8d1",
+      "text": "READ-ONLY MEMORY\n───⟨○⟩───┤■├───○\n               ┊\n               ┊\n               ◎─────╫────┤≈├────\nGECKO",
+      "posted_at": "2026-11-23 14:00:04"
+    },
+    {
       "id": "post-ccbd5e32c704d7c2",
       "text": "RIGHT ANGLE\n──┤⊡├─────┤■├───┤≈├──┤□├────┤●├─────\nTRUST (SENTIMENT)",
       "posted_at": "2026-11-23 10:00:04"
